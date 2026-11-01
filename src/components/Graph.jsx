@@ -119,7 +119,7 @@ const [apiData, setApiData] = useState([]);
       </div>
 
       {loading && <div className="text-center py-10 text-gray-500">Loading historical data...</div>}
-      {error && <div className="text-amber-600 text-xs mb-2">Notice: Using fallback data ({error})</div>}
+      {error && <div className="text-amber-600 text-xs mb-2">Notice:(sample data rehta) Using fallback data ({error})</div>}
 
       {!loading && (
         <div className="w-full h-72">
