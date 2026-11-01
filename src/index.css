@@ -13,8 +13,9 @@
   --color-text-primary: #111827;
   --color-button-primary: #3a5a40;
   --color-button-secondary: #588157;
-  --color-card2:#52b788;
-  --color-card3:#168aad;
+  --color-card2: #52b788;
+  --color-card3: #168aad;
+  --color-card4: #1b4332;
 
   /* font families */
   --font-lato: "Lato", sans-serif;
@@ -87,5 +88,37 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+.report-site-shell {
+  position: relative;
+}
+
+.report-site-container {
+  position: relative;
+  z-index: 2;
+}
+
+.report-site-panel-reveal {
+  position: relative;
+  z-index: 1;
+  margin-top: -20px;
+  opacity: 0;
+  transform: translateY(24px) scale(0.96);
+  transform-origin: top center;
+  animation: emergeFromBehind 0.35s ease forwards;
+}
+
+@keyframes emergeFromBehind {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.96);
+    filter: blur(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }

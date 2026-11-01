@@ -11,7 +11,7 @@ const DisplayContainer = () => {
   return (
     <>
         {/* <SendToast></SendToast> */}
-        <div className="container mt-8 flex flex-col items-center justify-center gap-y-6 w-8/12 p-5">
+        <div className="container mt-8 flex flex-col items-start justify-center gap-y-6 w-8/12 p-5">
             {/* this is a progress bar ahh that shows the risk score */}
             <RiskScore />
 

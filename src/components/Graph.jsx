@@ -10,8 +10,10 @@ import {
   Legend,
   Filler
 } from 'chart.js';
+
 import { Line } from 'react-chartjs-2';
 import ErrorModal from './ErrorModal';
+
 
 // Register Chart.js components (required for v3/v4)
 ChartJS.register(
