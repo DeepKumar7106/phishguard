@@ -6,11 +6,26 @@
   --color-scam: #b91c1c;
   --color-secondary: #059669;
   --color-texts-primary: #111827;
-  --color-button-primary:#3a5a40;
-  --color-button-secondary:#588157;
-  --color-card2:#52b788;
-  --color-card3:#168aad;
-  --color-card4:#1b4332;
+  --color-button-primary: #3a5a40;
+  --color-button-secondary: #588157;
+  --color-card2: #52b788;
+  --color-card3: #168aad;
+  --color-card4: #1b4332;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+}
+
+body {
+  font-family: "Inter", sans-serif;
 }
 
 /* .App {

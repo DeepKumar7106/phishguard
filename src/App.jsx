@@ -1,23 +1,18 @@
-import './App.css'
-import DisplayContainer from './components/DisplayContainer'
-import Header from './components/Header'
-import UserInput from './components/UserInput'
+import "./App.css";
+import DisplayContainer from "./components/DisplayContainer";
+import Header from "./components/Header";
+import UserInput from "./components/UserInput";
 function App() {
-
   return (
-    <div className="App bg-background flex flex-col items-center p-5 gap-y-9 min-h-screen">
+    <div className="App bg-background flex min-h-screen w-full flex-col items-center gap-y-6 p-3 sm:p-5">
       <Header />
       <UserInput />
       <DisplayContainer />
     </div>
-  )
+  );
 }
 
-export default App
-
-
-
-
+export default App;
 
 // import React, { useState } from 'react';
 // import ScamTrendChart from './ScamTrendChart';
@@ -34,8 +29,8 @@ export default App
 //   return (
 //     <div className="max-w-3xl mx-auto p-6 space-y-6">
 //       <form onSubmit={handleSearch} className="flex gap-2">
-//         <input 
-//           type="text" 
+//         <input
+//           type="text"
 //           value={query}
 //           onChange={(e) => setQuery(e.target.value)}
 //           placeholder="Enter domain (e.g. google-careers-secure.com) or email..."
