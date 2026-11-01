@@ -111,9 +111,7 @@ const ReportComponent = ({
       });
 
       setSuccessMessage(
-        `Report successfully recorded! (Report ID: ${
-          result.reportId || "Queued"
-        }). Thank you for helping protect students!`
+        "Report successfully recorded! Thank you for helping protect students!"
       );
       if (onReported) {
         onReported(result);
