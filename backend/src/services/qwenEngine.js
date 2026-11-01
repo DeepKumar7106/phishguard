@@ -33,7 +33,7 @@ export function getIndiaScamDataset() {
 
 const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';
 const QWEN_MODEL = process.env.OLLAMA_MODEL || 'qwen2.5:7b-instruct';
-const OLLAMA_TIMEOUT_MS = 25_000;
+const OLLAMA_TIMEOUT_MS = process.env.NODE_ENV === 'test' ? 1_500 : 25_000;
 
 function fetchWithTimeout(url, options = {}) {
   const timeoutSignal = AbortSignal.timeout(OLLAMA_TIMEOUT_MS);

@@ -1,5 +1,6 @@
 // Load environment variables before importing services that read them.
 import 'dotenv/config';
+import crudRouter from './routes/crud.js';
 import { createHash } from 'node:crypto';
 import express from 'express';
 import cors from 'cors';
@@ -190,7 +191,8 @@ app.get('/', (_req, res) => {
       'Layer 2: Domain Age & RDAP Checks',
       'Layer 3: Qwen 2.5 + Indian Scam Knowledge Base & Fallback',
       'Multi-modal Image Upload & OCR Ingestion',
-      'Redis Caching & SQLite / PostgreSQL Persistence',
+      'Redis Caching & PostgreSQL Main Database Persistence (Neon)',
+      'Full CRUD REST APIs for Reports, Domains, and Scam Patterns',
     ],
     timestamp: new Date().toISOString(),
   });
@@ -585,6 +587,11 @@ app.get('/api/scam-history', async (req, res) => {
     });
   }
 });
+
+
+// Mount CRUD operations for PostgreSQL main DB (reports, domains, scam-patterns)
+app.use('/api', crudRouter);
+app.use('/api/v1', crudRouter);
 
 // 404 fallback
 app.use((req, res) => {

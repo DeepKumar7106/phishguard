@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -36,4 +36,35 @@ model DomainCache {
   dailyReports  String       @default("[]")
   updatedAt     DateTime     @updatedAt
   reports       ScanReport[]
+}
+
+model ScamPattern {
+  jobId                 String   @id @map("job_id") @db.VarChar(50)
+  title                 String   @db.VarChar(255)
+  commonLocations       String[] @default([]) @map("common_locations")
+  communicationChannels String[] @default([]) @map("communication_channels")
+  salaryRange           String?  @map("salary_range") @db.VarChar(100)
+  paymentMethods        String[] @default([]) @map("payment_methods")
+  behavioralFlags       String[] @default([]) @map("behavioral_flags")
+  financialTrap         String   @map("financial_trap")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("scam_patterns")
+}
+
+model CommunityReport {
+  id                String   @id @db.VarChar(100)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  payloadHash       String   @map("payload_hash") @db.VarChar(64)
+  scamType          String   @map("scam_type") @db.VarChar(100)
+  description       String?
+  status            String   @default("STAGED") @db.VarChar(50)
+  verificationScore Int      @default(0) @map("verification_score")
+  sourceIpHash      String?  @map("source_ip_hash") @db.VarChar(64)
+  rawPayload        String?  @map("raw_payload")
+
+  @@index([payloadHash], map: "idx_reports_payload_hash")
+  @@index([status], map: "idx_reports_status")
+  @@map("community_reports")
 }
