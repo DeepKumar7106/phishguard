@@ -5,7 +5,7 @@ const DisplayContainer = () => {
   return (
     <>
         {/* <SendToast></SendToast> */}
-        <div className="container h-screen mt-8">
+        <div className="container mt-8">
             <RiskScore />
         </div>
     </>
