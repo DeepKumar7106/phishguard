@@ -57,9 +57,9 @@ const UserInput = () => {
           {/* <!-- Submit Button --> */}
           <button
             type="submit"
-            className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white  font-lexend font-semibold text-sm rounded-full shadow transition-all active:scale-95"
+            className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800  text-white  font-lexend font-semibold text-md rounded-full shadow transition-all active:scale-95"
           >
-            Scan for Scams
+            Scan
           </button>
         </div>
       </form>
