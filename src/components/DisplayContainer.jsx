@@ -17,7 +17,7 @@ const DisplayContainer = () => {
 
 
             {/* this is a chart to show historical data */}
-            <Graph />
+            <Graph searchQuery="example.com" />
         </div>
     </>
   )

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Geist+Pixel&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Lexend:wght@100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Geist+Pixel&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Lexend:wght@100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 
 @theme {
   /* Adding a single custom color */
@@ -11,16 +11,79 @@
   --color-scam: #b91c1c;
   --color-secondary: #059669;
   --color-text-primary: #111827;
-  --color-button-primary:#3a5a40;
-  --color-button-secondary:#588157;
+  --color-button-primary: #3a5a40;
+  --color-button-secondary: #588157;
 
   /* font families */
-  --font-lato: 'Lato', sans-serif;
-  --font-inter: 'Inter', sans-serif;
-  --font-lexend: 'Lexend', sans-serif;
-  --font-roboto: 'Roboto', sans-serif;
-  --font-poppins: 'Poppins', sans-serif;
-  --font-open-sans: 'Open Sans', sans-serif;
-  --font-geist-pixel: 'Geist Pixel', sans-serif;  
-} 
+  --font-lato: "Lato", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-lexend: "Lexend", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+  --font-open-sans: "Open Sans", sans-serif;
+  --font-geist-pixel: "Geist Pixel", sans-serif;
+}
 
+.error-modal-container {
+  margin-bottom: 1rem;
+  animation: modalIn 0.3s ease-out;
+}
+
+.error-modal-panel {
+  position: relative;
+  overflow: hidden;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+  border-radius: 0.875rem;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 12px 30px rgba(127, 29, 29, 0.08);
+  animation: panelFloat 0.28s ease-out;
+}
+
+.error-modal-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: linear-gradient(180deg, #ef4444, #fca5a5);
+}
+
+.error-modal-header {
+  margin-bottom: 0.35rem;
+}
+
+.error-modal-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #b91c1c;
+}
+
+.error-modal-panel p {
+  margin: 0;
+  color: #7f1d1d;
+  line-height: 1.5;
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes panelFloat {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
