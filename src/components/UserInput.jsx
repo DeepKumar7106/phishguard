@@ -3,18 +3,18 @@ import "./UserInput.css";
 
 const UserInput = () => {
   return (
-    <div class="max-w-2xl mx-auto p-11 bg-card rounded-xl shadow-md border border-gray-200 flex flex-col gap-y-5">
-      <label class="block text-lg font-lexend font-semibold text-gray-700 mb-2">
+    <div className="max-w-2xl mx-auto p-11 bg-card rounded-xl shadow-md border border-gray-200 flex flex-col gap-y-5">
+      <label className="block text-lg font-lexend font-semibold text-gray-700 mb-2">
         Analyze (Paste text/URL or upload screenshot/email file)
       </label>
 
-      <form id="userForm" class="space-y-4">
+      <form id="userForm" className="space-y-4">
         {/* <!-- Main Text / URL Input Area --> */}
         <div className="relative">
           <textarea
             id="inputContent"
             rows="5"
-            class="p-3 border border-gray-300 rounded-lg font-lexend focus:ring-2 focus:ring-emerald-600 focus:outline-none text-md text-texts-primary w-full resize-none"
+            className="p-3 border border-gray-300 rounded-lg font-lexend focus:ring-2 focus:ring-emerald-600 focus:outline-none text-md text-texts-primary w-full resize-none"
             placeholder="Paste email text, a URL link, or drag & drop a screenshot/file below"
           ></textarea>
         </div>
@@ -57,7 +57,7 @@ const UserInput = () => {
           {/* <!-- Submit Button --> */}
           <button
             type="submit"
-            class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white  font-lexend font-semibold text-sm rounded-full shadow transition-all active:scale-95"
+            className="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white  font-lexend font-semibold text-sm rounded-full shadow transition-all active:scale-95"
           >
             Scan for Scams
           </button>

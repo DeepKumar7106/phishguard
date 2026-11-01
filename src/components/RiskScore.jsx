@@ -1,12 +1,13 @@
 import React from 'react'
 
 const RiskScore = () => {
-    const riskBar = document.querySelector('.risk-bar');
-    // const risk = parseInt(localStorage.getItem('riskScore'), 10);
-    const risk = 75; // Example risk score, replace with actual value from localStorage or props
-    if(!riskBar) {
-        return;
-    }
+    window.addEventListener('DOMContentLoaded', () => {
+        const riskBar = document.querySelector('.risk-bar');
+        // const risk = parseInt(localStorage.getItem('riskScore'), 10);
+        const risk = 75; // Example risk score, replace with actual value from localStorage or props
+        // if(!riskBar) {
+    //     return;
+    // }
 
     const riskLevels = [
         { level: 'Low', color: '#4CAF50' },      // Green
@@ -31,7 +32,8 @@ const RiskScore = () => {
         riskBar.style.width = '100%';
         riskBar.style.backgroundColor = riskLevels[3].color;
     }
-
+    
+});
 
   return (
     <>
