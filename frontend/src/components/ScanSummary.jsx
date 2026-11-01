@@ -4,10 +4,16 @@ const ScanSummary = ({
   summary = "",
   redFlags = [],
   dpdpCompliance = null,
+  statutoryIdentifiers = null,
   metadataChecks = null,
   imageMetadata = null,
 }) => {
   const flags = Array.isArray(redFlags) ? redFlags : [];
+  const isDayZero =
+    metadataChecks?.domains?.[0]?.isDayZero ||
+    metadataChecks?.flags?.some((f) => f.code === "DAY_ZERO_DOMAIN") ||
+    flags.some((f) => f.toLowerCase().includes("registered today") || f.toLowerCase().includes("newly registered entity"));
+  const hasStatutory = statutoryIdentifiers?.hasStatutoryProof;
 
   return (
     <div className="w-full rounded-2xl bg-[#ebf1f4] p-5 shadow-[6px_6px_14px_rgba(163,177,198,0.2),-6px_-6px_14px_rgba(255,255,255,0.9)] border border-white/40 font-lexend">
@@ -19,6 +25,47 @@ const ScanSummary = ({
       <p className="text-slate-700 text-sm sm:text-base leading-relaxed mb-4 bg-white/50 p-3.5 rounded-xl border border-white/60">
         {summary || "No threat details recorded yet. Enter text or upload a screenshot above to scan."}
       </p>
+
+      {/* Day-0 Startup Official Verification Panel */}
+      {(isDayZero || hasStatutory) && (
+        <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50/90 p-4 shadow-sm animate-fadeIn">
+          <div className="flex items-center gap-2 text-amber-950 font-bold text-sm mb-1.5">
+            <span className="text-base">🏛️</span>
+            <span>Day-0 Startup & Statutory Verification Guide</span>
+          </div>
+          <p className="text-xs text-amber-900 mb-3 leading-relaxed">
+            This entity or domain was registered very recently. Legitimate ventures in India must be registered under the Ministry of Corporate Affairs (MCA) or Startup India. Use official government portals below to verify before proceeding:
+          </p>
+
+          {statutoryIdentifiers?.cins?.length > 0 && (
+            <div className="mb-3 text-xs text-slate-800 flex items-center flex-wrap gap-1.5">
+              <span className="font-semibold">Detected Corporate ID (CIN):</span>
+              <span className="font-mono bg-white px-2 py-0.5 rounded border border-amber-300 font-bold text-amber-900">
+                {statutoryIdentifiers.cins.join(", ")}
+              </span>
+            </div>
+          )}
+
+          <div className="flex flex-wrap gap-2 text-xs">
+            <a
+              href="https://www.mca.gov.in/content/mca/global/en/mca/master-data/MDS.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 font-medium text-slate-800 shadow-sm border border-slate-300 hover:bg-slate-100 transition"
+            >
+              <span>🔗</span> Verify on MCA Master Data Portal
+            </a>
+            <a
+              href="https://www.startupindia.gov.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-white px-3 py-1.5 font-medium text-slate-800 shadow-sm border border-slate-300 hover:bg-slate-100 transition"
+            >
+              <span>🇮🇳</span> Startup India Directory (DPIIT)
+            </a>
+          </div>
+        </div>
+      )}
 
       {/* Red Flags List */}
       {flags.length > 0 && (

@@ -8,6 +8,7 @@
 
 import { readFile } from 'node:fs/promises';
 import { isIP } from 'node:net';
+import { resolveMx } from 'node:dns/promises';
 
 import { prisma } from '../config/prisma.js';
 
@@ -343,6 +344,35 @@ function riskFromFlags(flags, fallback) {
   }
 
   return fallback;
+}
+
+
+async function checkMailExchange(domain) {
+  try {
+    const records = await resolveMx(domain);
+    if (Array.isArray(records) && records.length > 0) {
+      const exchanges = records.map((r) => String(r.exchange || '').toLowerCase());
+      const isGoogle = exchanges.some((e) => e.includes('google.com') || e.includes('googlemail.com'));
+      const isMicrosoft = exchanges.some((e) => e.includes('outlook.com') || e.includes('microsoft.com'));
+      const isZoho = exchanges.some((e) => e.includes('zoho.'));
+
+      return {
+        hasMx: true,
+        recordCount: records.length,
+        primaryExchange: records.sort((a, b) => a.priority - b.priority)[0]?.exchange,
+        corporateSuite: isGoogle
+          ? 'Google Workspace'
+          : isMicrosoft
+            ? 'Microsoft 365'
+            : isZoho
+              ? 'Zoho Mail'
+              : 'Custom Corporate Mail',
+      };
+    }
+    return { hasMx: false, recordCount: 0 };
+  } catch {
+    return { hasMx: false, recordCount: 0 };
+  }
 }
 
 async function analyzeDomain(candidate, lists) {

@@ -367,6 +367,7 @@ async function handleAnalyze(req, res, next) {
       metadata: layer1.metadata,
     },
     dpdpCompliance: layer1.dpdpCompliance,
+    statutoryIdentifiers: layer1.statutoryIdentifiers,
     imageMetadata: imageMetadata || undefined,
     metadataChecks,
     verdict,

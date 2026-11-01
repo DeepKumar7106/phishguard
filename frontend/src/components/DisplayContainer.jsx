@@ -69,6 +69,7 @@ const DisplayContainer = ({ scanResult, loading, error, onClearError, onReported
         summary={summary}
         redFlags={redFlags}
         dpdpCompliance={scanResult.dpdpCompliance}
+        statutoryIdentifiers={scanResult.statutoryIdentifiers}
         metadataChecks={scanResult.metadataChecks}
         imageMetadata={scanResult.imageMetadata}
       />

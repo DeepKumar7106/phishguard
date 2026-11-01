@@ -21,6 +21,45 @@ const CONFUSABLE_MAP = {
   '\u03BD': 'v',
 };
 
+
+// Statutory Corporate & Startup Registrations (MCA CIN, LLPIN, GSTIN, DPIIT Startup India)
+const CIN_REGEX = /\b([LU]\d{5}[A-Z]{2}\d{4}[A-Z]{3}\d{6})\b/gi;
+const LLPIN_REGEX = /\b([A-Z]{3}-\d{4})\b/gi;
+const GSTIN_REGEX = /\b(\d{2}[A-Z]{5}\d{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})\b/gi;
+const DPIIT_REGEX = /\b((?:DIPP|STARTUP)[\s-]?\d{4,6})\b/gi;
+
+export function extractStatutoryIdentifiers(text) {
+  if (!text || typeof text !== 'string') {
+    return {
+      cins: [],
+      llpins: [],
+      gstins: [],
+      dpiitIds: [],
+      hasStatutoryProof: false,
+      mcaVerificationUrl: 'https://www.mca.gov.in/content/mca/global/en/mca/master-data/MDS.html',
+      startupIndiaUrl: 'https://www.startupindia.gov.in',
+    };
+  }
+
+  const cins = [...new Set([...text.matchAll(CIN_REGEX)].map((m) => m[1].toUpperCase()))];
+  const llpins = [...new Set([...text.matchAll(LLPIN_REGEX)].map((m) => m[1].toUpperCase()))];
+  const gstins = [...new Set([...text.matchAll(GSTIN_REGEX)].map((m) => m[1].toUpperCase()))];
+  const dpiitIds = [...new Set([...text.matchAll(DPIIT_REGEX)].map((m) => m[1].toUpperCase()))];
+
+  const hasStatutoryProof =
+    cins.length > 0 || llpins.length > 0 || gstins.length > 0 || dpiitIds.length > 0;
+
+  return {
+    cins,
+    llpins,
+    gstins,
+    dpiitIds,
+    hasStatutoryProof,
+    mcaVerificationUrl: 'https://www.mca.gov.in/content/mca/global/en/mca/master-data/MDS.html',
+    startupIndiaUrl: 'https://www.startupindia.gov.in',
+  };
+}
+
 export const UPI_DOMAINS = [
   'okaxis', 'okhdfcbank', 'oksbi', 'okicici', 'paytm', 'ybl', 'ibl', 'axl',
   'apl', 'barodampay', 'upi', 'idfcbank', 'federal', 'indus', 'kotak'

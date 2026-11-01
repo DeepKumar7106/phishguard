@@ -1,6 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { preprocessInput, normalizeText, sanitizePii } from '../src/services/preprocessing.js';
+import {
+  preprocessInput,
+  normalizeText,
+  sanitizePii,
+  extractStatutoryIdentifiers,
+} from '../src/services/preprocessing.js';
 import {
   analyzeWithQwen,
   getIndiaScamDataset,
@@ -31,6 +36,17 @@ test('1. Layer 1: Rule Engine & DPDP Act Compliance Preprocessing', async (t) =>
 
     assert.equal(res.dpdpCompliance?.status, 'Compliant - PII Redacted');
     assert.ok(res.dpdpCompliance?.totalPiiRedacted >= 5);
+  });
+
+  await t.test('should extract statutory corporate identifiers (CIN, LLPIN, GSTIN, DPIIT)', () => {
+    const raw = 'Company: Acme Tech Pvt Ltd, CIN: U72900KA2026PTC188990, LLP: AAA-1234, GST: 29AAAAA0000A1Z5, DPIIT: DIPP99881.';
+    const ids = extractStatutoryIdentifiers(raw);
+    assert.equal(ids.hasStatutoryProof, true);
+    assert.equal(ids.cins[0], 'U72900KA2026PTC188990');
+    assert.equal(ids.llpins[0], 'AAA-1234');
+    assert.equal(ids.gstins[0], '29AAAAA0000A1Z5');
+    assert.equal(ids.dpiitIds[0], 'DIPP99881');
+    assert.ok(ids.mcaVerificationUrl);
   });
 
   await t.test('should support multiple input types (text, url, image, image_text, email)', () => {
@@ -96,6 +112,33 @@ test('3. Deterministic Fallback & Zero-False-Positive Guarantee', async (t) => {
     assert.equal(verdict.risk_level, 'Low');
     assert.ok(verdict.score <= 15);
     assert.equal(verdict.red_flags.length, 0);
+  });
+
+  await t.test('should handle Day-0 startup registered today with statutory MCA CIN (provisional medium risk with MCA guidance)', () => {
+    const startupText = 'We are StealthAI Labs, registered today with MCA CIN: U72900KA2026PTC123456. Looking for founding backend engineer. No fees or deposits charged.';
+    const metadataChecks = {
+      domains: [{ domain: 'stealthai-labs.in', ageInDays: 0, isDayZero: true, isWhitelisted: false }],
+      flags: [{ code: 'DAY_ZERO_DOMAIN', severity: 'high', message: 'Domain registered 0 days ago' }]
+    };
+
+    const verdict = executeDeterministicFallback(startupText, metadataChecks);
+    assert.equal(verdict.risk_level, 'Medium');
+    assert.ok(verdict.score <= 40);
+    assert.ok(verdict.isProvisionalStartup);
+    assert.ok(verdict.actionable_guidance.some(g => g.includes('MCA')));
+  });
+
+  await t.test('should immediately flag Day-0 domain demanding security deposit or fees as High Risk scam', () => {
+    const scamStartup = 'Welcome to new startup AI Solutions. Mandatory refundable laptop security fee of ₹6,000 required via UPI.';
+    const metadataChecks = {
+      domains: [{ domain: 'new-startup-ai.tech', ageInDays: 1, isDayZero: true, isWhitelisted: false }],
+      flags: [{ code: 'DAY_ZERO_DOMAIN', severity: 'high', message: 'Domain registered 1 days ago' }]
+    };
+
+    const verdict = executeDeterministicFallback(scamStartup, metadataChecks);
+    assert.equal(verdict.risk_level, 'High');
+    assert.ok(verdict.score >= 80);
+    assert.ok(verdict.red_flags.some(f => f.toLowerCase().includes('deposit') || f.toLowerCase().includes('laptop')));
   });
 
   await t.test('should detect high risk scam via deterministic fallback when Ollama is offline', () => {

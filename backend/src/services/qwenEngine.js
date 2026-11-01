@@ -119,6 +119,7 @@ Scope covers ALL fraud archetypes across India and globally:
 3. Digital Extortion & Impersonation (FedEx/DHL drug parcel threats, CBI/Police digital arrest, court summons).
 4. UPI & Financial Traps (reverse QR codes, 'enter PIN to receive money', crypto arbitrage, lottery/KBC claims).
 5. Student & Gig Scams (fake scholarship schemes, paid exam question paper leaks, fake training certificate fees).
+6. Day-0 / Newly Registered Startups: If an entity was registered today or recently, evaluate whether it exhibits scam behaviors (advance fees, laptop deposits, reverse UPI, Telegram redirects). If completely clean, classify as "Medium" (Provisional / Verification Required) and provide the MCA & Startup India verification guidance.
 
 Return ONLY a JSON object with exactly these fields:
 {
@@ -353,7 +354,43 @@ export function executeDeterministicFallback(text, metadataChecks = null) {
     };
   }
 
-  // 3. Medium / Inconclusive Suspicious Signals
+  // 3. Day-0 / Brand New Startup Verification Edge Case
+  const primaryDomainData = metadataChecks?.domains?.[0];
+  const ageInDays = primaryDomainData?.ageInDays;
+  const isDayZero = primaryDomainData?.isDayZero || (typeof ageInDays === 'number' && ageInDays <= 3);
+  const isNewDomain = typeof ageInDays === 'number' && ageInDays < 30;
+
+  const hasCIN = /\b[LU]\d{5}[A-Z]{2}\d{4}[A-Z]{3}\d{6}\b/i.test(text);
+  const hasLLP = /\b[A-Z]{3}-\d{4}\b/i.test(text);
+  const hasDPIIT = /\b(?:DIPP|STARTUP)[\s-]?\d{4,6}\b/i.test(text);
+  const hasStatutoryProof = hasCIN || hasLLP || hasDPIIT;
+
+  if ((isDayZero || isNewDomain) && !isCorporateWhitelisted) {
+    const ageDesc = isDayZero ? 'registered today (Day 0-3)' : `registered ${ageInDays} day(s) ago`;
+    return {
+      risk_level: 'Medium',
+      score: hasStatutoryProof ? 30 : 40,
+      matched_pattern_id: null,
+      matched_pattern_details: null,
+      isProvisionalStartup: true,
+      red_flags: [
+        `Newly registered entity: domain was ${ageDesc}`,
+        hasStatutoryProof
+          ? 'Statutory identifier detected; requires MCA Master Data verification'
+          : 'Early-stage venture requires statutory verification',
+      ],
+      explanation: `Domain was ${ageDesc}. While no fraudulent extortion or advance-fee patterns were detected, newly registered ventures cannot be validated on domain reputation alone. Follow statutory verification steps before sharing sensitive identity documents or signing contracts.`,
+      actionable_guidance: [
+        'Verify the company on the official MCA Portal (mca.gov.in -> MCA Services -> Master Data -> View Company/LLP Master Data).',
+        'Check whether the startup has official DPIIT recognition on the Startup India portal (startupindia.gov.in).',
+        'Verify that official communication comes from an authenticated corporate email domain, not an unverified free @gmail.com account.',
+        'GOLDEN RULE: If they ask for any upfront payment, refundable laptop fee, or UPI transfer, it is a scam—abort immediately.',
+      ],
+      engine: 'deterministic_fallback',
+    };
+  }
+
+  // 4. Medium / Inconclusive Suspicious Signals
   if (/telegram|whatsapp|earning|part-?time|investment|daily\s*income/i.test(text)) {
     return {
       risk_level: 'Medium',
@@ -370,7 +407,7 @@ export function executeDeterministicFallback(text, metadataChecks = null) {
     };
   }
 
-  // 4. Low Risk Default
+  // 5. Low Risk Default
   return {
     risk_level: 'Low',
     score: 15,
