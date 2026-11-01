@@ -1,0 +1,8 @@
+#inputContent {
+  min-height: 100px;
+  width: 100%;
+}
+
+.group:hover .group-hover\:opacity-100 {
+  opacity: 1;
+}
