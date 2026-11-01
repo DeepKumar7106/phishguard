@@ -38,15 +38,23 @@ function App() {
   };
 
   return (
-    <div className="App bg-background flex min-h-screen w-full flex-col items-center gap-y-6 p-3 sm:p-5 font-lexend">
-      <Header />
-      <UserInput onScan={handleScan} loading={loading} />
-      <DisplayContainer
-        scanResult={scanResult}
-        loading={loading}
-        error={error}
-        onClearError={handleClearError}
-      />
+    <div className="App page-shell bg-background flex min-h-screen w-full flex-col items-center gap-y-6 p-3 sm:p-5 font-lexend">
+      <div className="reveal-section section-delay-1 w-full flex justify-center">
+        <Header />
+      </div>
+
+      <div className="reveal-section section-delay-2 w-full flex justify-center">
+        <UserInput onScan={handleScan} loading={loading} />
+      </div>
+
+      <div className="reveal-section section-delay-3 w-full flex justify-center">
+        <DisplayContainer
+          scanResult={scanResult}
+          loading={loading}
+          error={error}
+          onClearError={handleClearError}
+        />
+      </div>
     </div>
   );
 }
