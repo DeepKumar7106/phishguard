@@ -10,7 +10,7 @@ const UserInput = () => {
 
       <form id="userForm" class="space-y-4">
         {/* <!-- Main Text / URL Input Area --> */}
-        <div class="relative">
+        <div className="relative">
           <textarea
             id="inputContent"
             rows="5"
@@ -22,7 +22,7 @@ const UserInput = () => {
         {/* <!-- File Upload & Submit Row --> */}
         <div className="flex items-center justify-between">
           {/* <!-- File input for images, PDFs, or .eml files --> */}
-          <div className="group relative flex items-center space-x-2">
+          <div className="group relative flex items-center space-x-2 active:scale-98 transition-all">
             <label
               className="cursor-pointer inline-flex items-center px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-md font-medium rounded-lg transition shadow-sm"
               aria-label="Upload a file (image, PDF, .eml, or .msg)"
