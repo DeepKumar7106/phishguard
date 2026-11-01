@@ -10,11 +10,10 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-
 import { Line } from "react-chartjs-2";
-import ErrorModal from "./ErrorModal";
+import { getScamHistory } from "../api";
 
-// Register Chart.js components (required for v3/v4)
+// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -27,72 +26,60 @@ ChartJS.register(
 );
 
 const Graph = ({ searchQuery }) => {
-  const [apiData, setApiData] = useState([]);
+  const [historyData, setHistoryData] = useState({ totalReports: 0, timeSeries: [] });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!searchQuery) return;
 
-    async function fetchScamHistory() {
+    let isMounted = true;
+    async function fetchHistory() {
       setLoading(true);
-      setError(null);
-
       try {
-        // Replace with your FastAPI backend endpoint
-        // ***
-        const response = await fetch(
-          `${process.env.BACKEND_ENDPOINT}/scam-history?q=${encodeURIComponent(searchQuery)}`,
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch historical data from server.");
+        const result = await getScamHistory(searchQuery);
+        if (isMounted) {
+          setHistoryData(result || { totalReports: 0, timeSeries: [] });
         }
-
-        const result = await response.json();
-        // Expected API response format: [{ date: 'Jan', reports: 4 }, { date: 'Feb', reports: 12 }]
-        setApiData(result);
       } catch (err) {
-        setError(err.message);
-        // Fallback mock data if API isn't live yet
-        setApiData([
-          { date: "Jan", reports: 2 },
-          { date: "Feb", reports: 5 },
-          { date: "Mar", reports: 1 },
-          { date: "Apr", reports: 14 },
-          { date: "May", reports: 22 },
-          { date: "Jun", reports: 38 },
-        ]);
+        console.warn("[graph] History fetch failed:", err.message);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
 
-    fetchScamHistory();
+    fetchHistory();
+    return () => {
+      isMounted = false;
+    };
   }, [searchQuery]);
 
-  if (!searchQuery) {
-    return (
-      <div className="p-4 text-sm text-white/70">
-        Enter a domain or email to view historical reports.
-      </div>
-    );
-  }
+  const targetLabel = searchQuery || "No Target Selected";
+  const timeSeries = historyData.timeSeries || [];
 
-  // Map API data into Chart.js format
+  // Generate chart data from backend timeSeries or default baseline
+  const labels = timeSeries.length > 0
+    ? timeSeries.map((item) => item.date)
+    : ["Day 1", "Day 2", "Day 3", "Today"];
+
+  const dataPoints = timeSeries.length > 0
+    ? timeSeries.map((item) => item.count)
+    : [0, 0, 0, historyData.totalReports || 0];
+
   const chartData = {
-    labels: apiData.map((item) => item.date),
+    labels,
     datasets: [
       {
-        label: "Scam Reports",
-        data: apiData.map((item) => item.reports),
+        label: `Reports for ${targetLabel}`,
+        data: dataPoints,
         borderColor: "#ef4444",
-        backgroundColor: "rgba(239, 68, 68, 0.1)",
-        borderWidth: 3,
+        backgroundColor: "rgba(239, 68, 68, 0.12)",
+        borderWidth: 2.5,
         fill: true,
-        tension: 0.3,
+        tension: 0.35,
         pointBackgroundColor: "#ef4444",
-        pointRadius: 5,
+        pointBorderColor: "#ffffff",
+        pointBorderWidth: 2,
+        pointRadius: 4,
       },
     ],
   };
@@ -105,57 +92,61 @@ const Graph = ({ searchQuery }) => {
         display: true,
         position: "top",
         labels: {
-          color: "#ffffff",
+          color: "#334155",
+          font: { family: "Lexend, sans-serif", size: 12 },
         },
+      },
+      tooltip: {
+        backgroundColor: "#1e293b",
+        padding: 10,
+        titleFont: { size: 12 },
+        bodyFont: { size: 12 },
       },
     },
     scales: {
       x: {
-        ticks: {
-          color: "#ffffff",
-        },
-        grid: {
-          color: "rgba(255,255,255,0.12)",
-        },
+        grid: { display: false },
+        ticks: { color: "#64748b", font: { size: 11 } },
       },
       y: {
         beginAtZero: true,
+        grid: { color: "rgba(203, 213, 225, 0.4)" },
         ticks: {
-          precision: 0,
-          color: "#ffffff",
-        },
-        grid: {
-          color: "rgba(255,255,255,0.12)",
+          stepSize: 1,
+          color: "#64748b",
+          font: { size: 11 },
         },
       },
     },
   };
 
   return (
-    <div className="w-full rounded-[28px] border border-white/30 bg-white/20 p-6 shadow-[0_8px_32px_rgba(15,23,42,0.12)] backdrop-blur-xl backdrop-saturate-150">
-      <div className="mb-4">
-        <h3 className="text-lg font-semibold text-white">
-          Scam Reports Over Time for:{" "}
-          <span className="font-mono text-sm text-blue-200">{searchQuery}</span>
-        </h3>
+    <div className="w-full rounded-2xl bg-[#ebf1f4] p-5 shadow-[6px_6px_14px_rgba(163,177,198,0.2),-6px_-6px_14px_rgba(255,255,255,0.9)] border border-white/40 font-lexend">
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <h3 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+            <span>📈</span> Historical Scam Reports Timeline
+          </h3>
+          <p className="text-xs text-slate-500 mt-0.5">
+            Target: <span className="font-semibold text-slate-700">{targetLabel}</span>
+          </p>
+        </div>
+        <div className="text-right">
+          <span className="text-sm font-semibold text-slate-700 bg-white/70 px-3 py-1 rounded-full border border-slate-200">
+            Total Reports: <strong>{historyData.totalReports || 0}</strong>
+          </span>
+        </div>
       </div>
 
-      {loading && (
-        <div className="py-10 text-center text-white/80">
-          Loading historical data...
-        </div>
-      )}
-      {error && (
-        <div className="mb-2 text-xs text-amber-200">
-          Notice:(sample data rehta) Using fallback data ({error})
-        </div>
-      )}
-
-      {!loading && (
-        <div className="h-72 w-full rounded-2xl border border-white/40 bg-white/15 p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.45),inset_0_-1px_0_rgba(148,163,184,0.12)]">
+      <div className="h-64 w-full bg-white/50 rounded-xl p-3 border border-white/70">
+        {loading ? (
+          <div className="h-full flex items-center justify-center text-sm text-slate-500">
+            Loading historical data...
+          </div>
+        ) : (
           <Line data={chartData} options={options} />
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

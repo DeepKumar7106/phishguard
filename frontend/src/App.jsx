@@ -1,48 +1,54 @@
+import React, { useState } from "react";
 import "./App.css";
-import DisplayContainer from "./components/DisplayContainer";
 import Header from "./components/Header";
 import UserInput from "./components/UserInput";
+import DisplayContainer from "./components/DisplayContainer";
+import { analyzeThreat } from "./api";
+
 function App() {
+  const [scanResult, setScanResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleScan = async ({ content, file }) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await analyzeThreat({ content, file });
+      setScanResult(result);
+
+      // Scroll smoothly to results
+      setTimeout(() => {
+        window.scrollBy({
+          top: 350,
+          behavior: "smooth",
+        });
+      }, 150);
+    } catch (err) {
+      console.error("[app] Threat analysis error:", err);
+      setError(err.message || "Failed to analyze threat. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearError = () => {
+    setError(null);
+  };
+
   return (
-    <div className="App bg-background flex min-h-screen w-full flex-col items-center gap-y-6 p-3 sm:p-5">
+    <div className="App bg-background flex min-h-screen w-full flex-col items-center gap-y-6 p-3 sm:p-5 font-lexend">
       <Header />
-      <UserInput />
-      <DisplayContainer />
+      <UserInput onScan={handleScan} loading={loading} />
+      <DisplayContainer
+        scanResult={scanResult}
+        loading={loading}
+        error={error}
+        onClearError={handleClearError}
+      />
     </div>
   );
 }
 
 export default App;
-
-// import React, { useState } from 'react';
-// import ScamTrendChart from './ScamTrendChart';
-
-// export default function App() {
-//   const [query, setQuery] = useState('');
-//   const [searchedValue, setSearchedValue] = useState('');
-
-//   const handleSearch = (e) => {
-//     e.preventDefault();
-//     setSearchedValue(query);
-//   };
-
-//   return (
-//     <div className="max-w-3xl mx-auto p-6 space-y-6">
-//       <form onSubmit={handleSearch} className="flex gap-2">
-//         <input
-//           type="text"
-//           value={query}
-//           onChange={(e) => setQuery(e.target.value)}
-//           placeholder="Enter domain (e.g. google-careers-secure.com) or email..."
-//           className="flex-1 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-//         />
-//         <button type="submit" className="px-6 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
-//           Check Trend
-//         </button>
-//       </form>
-
-//       {/* Renders line chart dynamically when search is triggered */}
-//       <ScamTrendChart searchQuery={searchedValue} />
-//     </div>
-//   );
-// }
