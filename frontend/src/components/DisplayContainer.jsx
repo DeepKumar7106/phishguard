@@ -80,7 +80,7 @@ const DisplayContainer = ({ scanResult, loading, error, onClearError, onReported
       />
 
       {/* 3. Historical Threat Trend Graph */}
-      {graphTarget && <Graph searchQuery={graphTarget} />}
+      {graphTarget && <Graph searchQuery={graphTarget} scanResult={scanResult} />}
 
       {/* 4. Actionable Future Guidance */}
       <Suggestion suggestion={actionableGuidance} />

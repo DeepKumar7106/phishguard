@@ -134,6 +134,7 @@ async function persistScanReport({
         actionableGuidance: JSON.stringify(verdict.actionable_guidance),
       },
       update: {
+        reportCount: { increment: 1 },
         target,
         rawContent,
         inputType,
@@ -259,9 +260,21 @@ async function handleAnalyze(req, res, next) {
           reportEndpoint,
           cachedResponse.metadataChecks,
         );
+        try {
+          await prisma.scanReport.updateMany({
+            where: { contentHash: hash },
+            data: { reportCount: { increment: 1 } },
+          });
+          const target = cachedResponse.input?.target || hash;
+          await deleteCachedJson(HISTORY_CACHE_PREFIX + target);
+        } catch (e) {
+          console.warn('[cache] could not increment report count on cache hit:', e.message);
+        }
+
         const reportCounts = await loadReportCounts({
           endpoint: reportEndpoint,
           domain: reportDomain,
+          contentHash: hash,
         });
 
         res.set('X-Cache', 'HIT');
@@ -350,6 +363,7 @@ async function handleAnalyze(req, res, next) {
   const reportCounts = await loadReportCounts({
     endpoint: reportEndpoint,
     domain: reportDomain,
+    contentHash: hash,
   });
 
   const responsePayload = {

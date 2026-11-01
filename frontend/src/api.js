@@ -68,7 +68,7 @@ export async function getScamHistory(target) {
 
   try {
     const response = await fetch(
-      `${API_BASE}/api/scam-history?target=${encodeURIComponent(target.trim())}`
+      `${API_BASE}/api/scam-history?target=${encodeURIComponent(target.trim())}&_t=${Date.now()}`
     );
 
     if (!response.ok) {

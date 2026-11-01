@@ -145,12 +145,12 @@ export function deriveReportDomain(endpoint, metadataChecks) {
   return null;
 }
 
-export async function loadReportCounts({ endpoint, domain }) {
+export async function loadReportCounts({ endpoint, domain, contentHash }) {
   let endpointReportCount = 0;
   let domainReportCount = 0;
 
   try {
-    const [endpointAggregate, domainCache] = await Promise.all([
+    const [endpointAggregate, domainCache, hashReport] = await Promise.all([
       endpoint
         ? prisma.scanReport.aggregate({
             where: { targetEndpoint: endpoint },
@@ -163,9 +163,15 @@ export async function loadReportCounts({ endpoint, domain }) {
             select: { reportCount: true },
           })
         : Promise.resolve(null),
+      contentHash
+        ? prisma.scanReport.findUnique({
+            where: { contentHash },
+            select: { reportCount: true },
+          })
+        : Promise.resolve(null),
     ]);
 
-    endpointReportCount = endpointAggregate?._sum?.reportCount ?? 0;
+    endpointReportCount = endpointAggregate?._sum?.reportCount ?? hashReport?.reportCount ?? 0;
     domainReportCount = domainCache?.reportCount ?? 0;
   } catch (error) {
     console.warn(

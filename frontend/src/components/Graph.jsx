@@ -25,7 +25,7 @@ ChartJS.register(
   Filler,
 );
 
-const Graph = ({ searchQuery }) => {
+const Graph = ({ searchQuery, scanResult = null }) => {
   const [historyData, setHistoryData] = useState({ totalReports: 0, timeSeries: [] });
   const [loading, setLoading] = useState(false);
 
@@ -51,7 +51,7 @@ const Graph = ({ searchQuery }) => {
     return () => {
       isMounted = false;
     };
-  }, [searchQuery]);
+  }, [searchQuery, scanResult]);
 
   const targetLabel = searchQuery || "No Target Selected";
   const timeSeries = historyData.timeSeries || [];

@@ -157,7 +157,7 @@ export async function getScamHistory(rawTarget) {
 
   const reports = await prisma.scanReport.findMany({
     where: {
-      OR: [{ target }, { contentHash: target }],
+      OR: [{ target }, { contentHash: target }, { targetEndpoint: target }],
     },
     select: { createdAt: true, reportCount: true },
     orderBy: { createdAt: 'asc' },
