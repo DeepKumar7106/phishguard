@@ -6,6 +6,7 @@ import Suggestion from "./Suggestion";
 import ReportSite from "./ReportSite";
 import ErrorModal from "./ErrorModal";
 import LoadAnimation1 from "./load-animations/LoadAnimation1";
+import { deriveReportSummaryTitle } from "../utils/reportSummary";
 
 const DisplayContainer = ({ scanResult, loading, error, onClearError, onReported }) => {
   if (loading) {
@@ -48,11 +49,15 @@ const DisplayContainer = ({ scanResult, loading, error, onClearError, onReported
   const redFlags = verdict.red_flags || [];
   const actionableGuidance = verdict.actionable_guidance || [];
 
-  const target =
-    scanResult.input?.target ||
+  // Historical graph query target (domain or contentHash)
+  const graphTarget =
     scanResult.metadataChecks?.domains?.[0]?.domain ||
-    scanResult.input?.contentHash?.slice(0, 16) ||
+    scanResult.input?.contentHash ||
+    scanResult.input?.target ||
     "";
+
+  // Formatted summary title for the report submission
+  const reportSummaryTitle = deriveReportSummaryTitle(scanResult);
 
   return (
     <div className="container mt-4 flex w-full max-w-5xl flex-col items-start justify-center gap-y-6 p-0 sm:p-2 animate-fadeIn">
@@ -75,13 +80,18 @@ const DisplayContainer = ({ scanResult, loading, error, onClearError, onReported
       />
 
       {/* 3. Historical Threat Trend Graph */}
-      {target && <Graph searchQuery={target} />}
+      {graphTarget && <Graph searchQuery={graphTarget} />}
 
       {/* 4. Actionable Future Guidance */}
       <Suggestion suggestion={actionableGuidance} />
 
-      {/* 5. Community Report Portal */}
-      <ReportSite defaultTarget={target} onReported={onReported} />
+      {/* 5. Community Threat Report Portal with Auto-Summarized Title */}
+      <ReportSite
+        defaultTitle={reportSummaryTitle}
+        defaultTarget={graphTarget}
+        scanResult={scanResult}
+        onReported={onReported}
+      />
     </div>
   );
 };

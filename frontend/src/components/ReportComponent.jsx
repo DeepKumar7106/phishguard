@@ -1,23 +1,83 @@
 import React, { useState, useEffect } from "react";
 import { submitScamReport } from "../api";
+import {
+  deriveReportSummaryTitle,
+  deriveReportDescription,
+  isHash,
+} from "../utils/reportSummary";
 
-const ReportComponent = ({ defaultTarget = "", onReported = null }) => {
-  const [targetEndpoint, setTargetEndpoint] = useState(defaultTarget || "");
-  const [description, setDescription] = useState("");
+const ReportComponent = ({
+  defaultTitle = "",
+  defaultTarget = "",
+  scanResult = null,
+  onReported = null,
+}) => {
+  // Compute initial summarized title from scanResult or props
+  const computeInitialTitle = () => {
+    if (defaultTitle && !isHash(defaultTitle)) {
+      return defaultTitle;
+    }
+    if (scanResult) {
+      return deriveReportSummaryTitle(scanResult, defaultTarget);
+    }
+    if (defaultTarget && !isHash(defaultTarget)) {
+      return `[Scam Report] ${defaultTarget.trim()}`;
+    }
+    return "";
+  };
+
+  // Compute initial contact / domain
+  const computeInitialContact = () => {
+    const domain =
+      scanResult?.metadataChecks?.domains?.find((d) => !d.isIp)?.domain ||
+      scanResult?.metadataChecks?.domains?.[0]?.domain;
+    if (domain) return domain;
+
+    if (
+      defaultTarget &&
+      !isHash(defaultTarget) &&
+      (defaultTarget.includes(".") ||
+        defaultTarget.includes("@") ||
+        /^\+?\d/.test(defaultTarget))
+    ) {
+      return defaultTarget;
+    }
+    return "";
+  };
+
+  const [targetEndpoint, setTargetEndpoint] = useState(computeInitialTitle);
+  const [contactEndpoint, setContactEndpoint] = useState(computeInitialContact);
+  const [description, setDescription] = useState(() =>
+    scanResult ? deriveReportDescription(scanResult) : ""
+  );
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
+  // Synchronize when scanResult or default props change
   useEffect(() => {
-    if (defaultTarget) {
-      setTargetEndpoint(defaultTarget);
+    const newTitle = computeInitialTitle();
+    if (newTitle) {
+      setTargetEndpoint(newTitle);
     }
-  }, [defaultTarget]);
+
+    const newContact = computeInitialContact();
+    if (newContact) {
+      setContactEndpoint(newContact);
+    }
+
+    if (scanResult) {
+      const autoDesc = deriveReportDescription(scanResult);
+      if (autoDesc) {
+        setDescription(autoDesc);
+      }
+    }
+  }, [scanResult, defaultTitle, defaultTarget]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!targetEndpoint.trim()) {
-      setErrorMessage("Please enter the scam URL or email address.");
+      setErrorMessage("Please enter the title or summary of the scam report.");
       return;
     }
 
@@ -26,13 +86,34 @@ const ReportComponent = ({ defaultTarget = "", onReported = null }) => {
     setSuccessMessage(null);
 
     try {
+      const detectedDomain =
+        scanResult?.metadataChecks?.domains?.find((d) => !d.isIp)?.domain ||
+        scanResult?.metadataChecks?.domains?.[0]?.domain ||
+        (contactEndpoint &&
+        contactEndpoint.includes(".") &&
+        !contactEndpoint.includes("@") &&
+        !contactEndpoint.includes(" ")
+          ? contactEndpoint.trim()
+          : null);
+
+      let fullDescription = description.trim();
+      if (contactEndpoint && contactEndpoint.trim()) {
+        fullDescription = fullDescription
+          ? `${fullDescription}\n\nReported Contact / URL: ${contactEndpoint.trim()}`
+          : `Reported Contact / URL: ${contactEndpoint.trim()}`;
+      }
+
       const result = await submitScamReport({
         targetEndpoint: targetEndpoint.trim(),
-        description: description.trim(),
+        domain: detectedDomain,
+        description: fullDescription,
+        inputType: scanResult?.input?.inputType || "text",
       });
 
       setSuccessMessage(
-        `Report successfully recorded! (Report ID: ${result.reportId || "Queued"}). Thank you for helping protect students!`
+        `Report successfully recorded! (Report ID: ${
+          result.reportId || "Queued"
+        }). Thank you for helping protect students!`
       );
       if (onReported) {
         onReported(result);
@@ -66,25 +147,54 @@ const ReportComponent = ({ defaultTarget = "", onReported = null }) => {
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        {/* Field 1: Report Title / Summarized Format of Issue Submitted */}
         <div>
-          <label
-            className="text-slate-700 text-xs sm:text-sm font-semibold block mb-1"
-            htmlFor="scamUrl"
-          >
-            Suspicious URL, Recruiter Email, or Phone Number:
-          </label>
+          <div className="flex items-center justify-between mb-1">
+            <label
+              className="text-slate-700 text-xs sm:text-sm font-semibold block"
+              htmlFor="scamTitle"
+            >
+              Report Title (Summarized Issue Format):
+            </label>
+            <span className="text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-medium">
+              Auto-summarized
+            </span>
+          </div>
           <input
             type="text"
-            id="scamUrl"
+            id="scamTitle"
             value={targetEndpoint}
             onChange={(e) => setTargetEndpoint(e.target.value)}
             disabled={loading}
+            className="w-full bg-[#edf3f7] px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition font-medium"
+            placeholder="e.g. [High Risk Scam] Fake Job Offer - Laptop Security Deposit Scheme"
+            required
+          />
+          <p className="text-[11px] text-slate-500 mt-1">
+            Summarized format of the issue submitted. You can edit this before submitting to the community threat network.
+          </p>
+        </div>
+
+        {/* Field 2: Optional Contact / URL / Recruiter Handle */}
+        <div>
+          <label
+            className="text-slate-700 text-xs sm:text-sm font-semibold block mb-1"
+            htmlFor="scamContact"
+          >
+            Suspicious URL, Recruiter Email, or Phone (Optional):
+          </label>
+          <input
+            type="text"
+            id="scamContact"
+            value={contactEndpoint}
+            onChange={(e) => setContactEndpoint(e.target.value)}
+            disabled={loading}
             className="w-full bg-[#edf3f7] px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:outline-none transition"
             placeholder="e.g. fake-infosys-jobs.xyz, recruiter@gmail.com, or +91 9876543210"
-            required
           />
         </div>
 
+        {/* Field 3: Deceptive Request / Financial Trap Details */}
         <div>
           <label
             className="text-slate-700 text-xs sm:text-sm font-semibold block mb-1"
@@ -106,7 +216,7 @@ const ReportComponent = ({ defaultTarget = "", onReported = null }) => {
         <button
           type="submit"
           disabled={loading || !targetEndpoint.trim()}
-          className="mt-2 px-6 py-2.5 bg-blue-900 text-white font-semibold rounded-full hover:bg-blue-800 transition-all flex items-center justify-center active:scale-95 mx-auto disabled:opacity-50 text-sm"
+          className="mt-2 px-6 py-2.5 bg-blue-900 text-white font-semibold rounded-full hover:bg-blue-800 transition-all flex items-center justify-center active:scale-95 mx-auto disabled:opacity-50 text-sm shadow-md"
         >
           {loading ? "Recording Report..." : "Submit Scam Report"}
         </button>

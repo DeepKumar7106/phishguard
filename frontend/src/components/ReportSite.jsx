@@ -1,7 +1,12 @@
 import React, { useState, useRef } from "react";
 import ReportComponent from "./ReportComponent";
 
-const ReportSite = ({ defaultTarget = "", onReported = null }) => {
+const ReportSite = ({
+  defaultTitle = "",
+  defaultTarget = "",
+  scanResult = null,
+  onReported = null,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef(null);
 
@@ -40,7 +45,12 @@ const ReportSite = ({ defaultTarget = "", onReported = null }) => {
 
         {isOpen && (
           <div ref={panelRef} className="report-site-panel-reveal w-full animate-fadeIn">
-            <ReportComponent defaultTarget={defaultTarget} onReported={onReported} />
+            <ReportComponent
+              defaultTitle={defaultTitle}
+              defaultTarget={defaultTarget}
+              scanResult={scanResult}
+              onReported={onReported}
+            />
           </div>
         )}
       </div>

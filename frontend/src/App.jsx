@@ -5,6 +5,7 @@ import UserInput from "./components/UserInput";
 import DisplayContainer from "./components/DisplayContainer";
 import HistoryModal from "./components/HistoryModal";
 import { analyzeThreat } from "./api";
+import { deriveReportSummaryTitle, isHash } from "./utils/reportSummary";
 
 const STORAGE_KEY_LAST_SCAN = "phishguard_last_scan";
 const STORAGE_KEY_HISTORY = "phishguard_scan_history";
@@ -64,10 +65,12 @@ function App() {
       const result = await analyzeThreat({ content, file });
       setScanResult(result);
 
-      // Save to scan history with authenticity and site details
+      // Save to scan history with authenticity and site details (prevent raw SHA-256 hashes)
+      const detectedDomain = result.metadataChecks?.domains?.[0]?.domain;
       const targetName =
-        result.metadataChecks?.domains?.[0]?.domain ||
-        result.input?.target ||
+        detectedDomain ||
+        (!isHash(result.input?.target) ? result.input?.target : null) ||
+        deriveReportSummaryTitle(result) ||
         (content ? content.slice(0, 50).trim() : file?.name || "Scanned Entity");
 
       const riskLevel = result.verdict?.risk_level || "Unknown";

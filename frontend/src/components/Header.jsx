@@ -1,6 +1,13 @@
 import React from "react";
 import logo from "../assets/logo.jpeg";
 
+const ClockIcon = ({ className = "w-5 h-5" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <circle cx="12" cy="12" r="9" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
+  </svg>
+);
+
 const Header = ({ onOpenHistory, historyCount = 0 }) => {
   return (
     <>
@@ -25,7 +32,7 @@ const Header = ({ onOpenHistory, historyCount = 0 }) => {
           className="search-button group relative flex items-center justify-center gap-2 rounded-full bg-emerald-700/90 hover:bg-emerald-800 px-5 py-2.5 text-white shadow-md transition duration-300 ease-in-out active:scale-95 cursor-pointer"
           title="View scam search history"
         >
-          <span className="text-base sm:text-lg">🕒</span>
+          <ClockIcon className="w-5 h-5 text-emerald-100 group-hover:rotate-12 transition-transform duration-300" />
           <span className="text-base font-lexend font-semibold sm:text-lg">
             History
           </span>
