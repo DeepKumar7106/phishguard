@@ -3,8 +3,8 @@ import "./UserInput.css";
 
 const UserInput = () => {
   return (
-    <div className="mx-auto w-full max-w-5xl rounded-2xl border border-gray-200 bg-card p-4 shadow-md sm:p-6 lg:p-7">
-      <label className="mb-3 block text-lg font-lexend font-semibold text-gray-700 sm:text-xl">
+    <div className="mx-auto mt-8 w-full max-w-5xl rounded-[28px] border border-white/30 bg-[#ebf1f4] p-4 shadow-[10px_10px_20px_rgba(163,177,198,0.2),0px_0px_20px_rgba(255,255,255,0.9)] sm:p-6 lg:p-7 sm:mt-4">
+      <label className="mb-3 block text-lg font-lexend font-semibold text-slate-700 sm:text-xl">
         Analyze (Paste text/URL or upload screenshot/email file)
       </label>
 
@@ -14,7 +14,7 @@ const UserInput = () => {
           <textarea
             id="inputContent"
             rows="5"
-            className="w-full resize-none rounded-xl border border-gray-300 bg-white p-3 font-lexend text-base text-texts-primary shadow-sm transition focus:outline-none focus:ring-2 focus:ring-emerald-600"
+            className="w-full resize-none rounded-2xl border border-transparent bg-[#edf3f7] p-3 font-lexend text-base text-slate-700 shadow-[inset_8px_8px_16px_rgba(163,177,198,0.18),inset_-8px_-8px_16px_rgba(255,255,255,0.9)] transition focus:outline-none focus:ring-2 focus:ring-emerald-500/70"
             placeholder="Paste email text, a URL link, or drag & drop a screenshot/file below"
           ></textarea>
         </div>
@@ -24,7 +24,7 @@ const UserInput = () => {
           {/* <!-- File input for images, PDFs, or .eml files --> */}
           <div className="group relative flex items-center transition-all active:scale-98">
             <label
-              className="inline-flex cursor-pointer items-center rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-200 sm:text-base"
+              className="inline-flex cursor-pointer items-center rounded-xl bg-[#ebf1f4] px-4 py-2.5 text-sm font-medium text-slate-700 shadow-[6px_6px_12px_rgba(163,177,198,0.18),-6px_-6px_12px_rgba(255,255,255,0.9)] transition hover:shadow-[inset_3px_3px_8px_rgba(163,177,198,0.15),inset_-3px_-3px_8px_rgba(255,255,255,0.9)] sm:text-base"
               aria-label="Upload a file (image, PDF, .eml, or .msg)"
             >
               <svg
@@ -57,7 +57,7 @@ const UserInput = () => {
           {/* <!-- Submit Button --> */}
           <button
             type="submit"
-            className="w-full rounded-full bg-emerald-700 px-5 py-2.5 text-base font-lexend font-semibold text-white shadow transition-all hover:bg-emerald-800 active:scale-95 sm:w-auto"
+            className="w-full rounded-full bg-gradient-to-br from-emerald-600 to-emerald-700 px-5 py-2.5 text-base font-lexend font-semibold text-white shadow-[6px_6px_14px_rgba(43,120,92,0.35),-4px_-4px_10px_rgba(255,255,255,0.14)] transition-all hover:brightness-105 active:scale-95 sm:w-auto"
           >
             Scan
           </button>
