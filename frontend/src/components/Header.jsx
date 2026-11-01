@@ -1,6 +1,7 @@
 import React from "react";
 import logo from "../assets/logo.jpeg";
-const Header = () => {
+
+const Header = ({ onOpenHistory, historyCount = 0 }) => {
   return (
     <>
       <div className="titleContainer flex w-full max-w-5xl flex-col items-center justify-between gap-3 rounded-full border border-white/30 bg-white/20 p-4 shadow-[0_8px_32px_rgba(15,23,42,0.12)] backdrop-blur-xl backdrop-saturate-150 sm:flex-row sm:p-5">
@@ -18,11 +19,21 @@ const Header = () => {
           </h1>
         </div>
 
-        <button className="search-button flex items-center justify-center gap-2 rounded-full bg-emerald-700/90 px-4 py-2 text-white shadow-md transition duration-300 ease-in-out hover:bg-emerald-800 active:scale-95">
-          <span className="fa fa-history text-md"></span>
-          <span className="text-lg font-lexend font-semibold sm:text-xl">
+        <button
+          type="button"
+          onClick={onOpenHistory}
+          className="search-button group relative flex items-center justify-center gap-2 rounded-full bg-emerald-700/90 hover:bg-emerald-800 px-5 py-2.5 text-white shadow-md transition duration-300 ease-in-out active:scale-95 cursor-pointer"
+          title="View scam search history"
+        >
+          <span className="text-base sm:text-lg">🕒</span>
+          <span className="text-base font-lexend font-semibold sm:text-lg">
             History
           </span>
+          {historyCount > 0 && (
+            <span className="ml-1 inline-flex items-center justify-center rounded-full bg-white text-emerald-800 text-xs font-bold px-2 py-0.5 shadow-sm">
+              {historyCount}
+            </span>
+          )}
         </button>
       </div>
     </>

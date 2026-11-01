@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./UserInput.css";
 
-const UserInput = ({ onScan, loading }) => {
+const UserInput = ({ onScan, loading, hasResult, onClear }) => {
   const [content, setContent] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
@@ -18,6 +18,17 @@ const UserInput = ({ onScan, loading }) => {
     setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
+    }
+  };
+
+  const handleClear = () => {
+    setContent("");
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+    if (onClear) {
+      onClear();
     }
   };
 
@@ -110,7 +121,7 @@ const UserInput = ({ onScan, loading }) => {
             <button
               type="button"
               onClick={handleRemoveFile}
-              className="ml-3 text-emerald-700 hover:text-red-600 font-bold text-base px-1.5 rounded transition"
+              className="ml-3 text-emerald-700 hover:text-red-600 font-bold text-base px-1.5 rounded transition cursor-pointer"
               title="Remove file"
             >
               ✕
@@ -156,24 +167,39 @@ const UserInput = ({ onScan, loading }) => {
             </span>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading || (!content.trim() && !selectedFile)}
-            className="w-full inline-flex items-center justify-center rounded-full bg-gradient-to-br from-emerald-600 to-emerald-700 px-7 py-2.5 text-base font-lexend font-semibold text-white shadow-[6px_6px_14px_rgba(43,120,92,0.35),-4px_-4px_10px_rgba(255,255,255,0.14)] transition-all hover:brightness-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed sm:w-auto"
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                </svg>
-                Scanning Threat...
-              </span>
-            ) : (
-              "Scan Now"
+          {/* Action Buttons: Clear Button (on left side) & Submit Button */}
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+            {hasResult && (
+              <button
+                type="button"
+                onClick={handleClear}
+                disabled={loading}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-slate-200 hover:bg-slate-300 text-slate-700 px-6 py-2.5 text-base font-lexend font-semibold shadow-[4px_4px_10px_rgba(163,177,198,0.25),-4px_-4px_10px_rgba(255,255,255,0.9)] transition-all active:scale-95 cursor-pointer disabled:opacity-50"
+                title="Clear current scan results"
+              >
+                <span>✕</span> Clear Result
+              </button>
             )}
-          </button>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={loading || (!content.trim() && !selectedFile)}
+              className="w-full sm:w-auto inline-flex items-center justify-center rounded-full bg-gradient-to-br from-emerald-600 to-emerald-700 px-7 py-2.5 text-base font-lexend font-semibold text-white shadow-[6px_6px_14px_rgba(43,120,92,0.35),-4px_-4px_10px_rgba(255,255,255,0.14)] transition-all hover:brightness-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                  </svg>
+                  Scanning Threat...
+                </span>
+              ) : (
+                "Scan Now"
+              )}
+            </button>
+          </div>
         </div>
       </form>
     </div>
