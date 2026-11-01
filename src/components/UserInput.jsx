@@ -14,7 +14,7 @@ const UserInput = () => {
           <textarea
             id="inputContent"
             rows="5"
-            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-400 focus:outline-none text-md text-texts-primary w-full resize-none"
+            class="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-600 focus:outline-none text-md text-texts-primary w-full resize-none"
             placeholder="Paste email text, a URL link, or drag & drop a screenshot/file below"
           ></textarea>
         </div>
