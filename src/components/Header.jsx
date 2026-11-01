@@ -12,9 +12,9 @@ const Header = () => {
           <h1 className="title font-bold text-3xl text-primary">PhishGuard</h1>
         </div>
 
-        <button className="search-button flex gap-2 justify-between items-center bg-scam px-4 py-2 rounded-full text-white hover:bg-scam/80  transition duration-300 ease-in-out active:scale-95">
-          <span className="fas fa-search text-md"></span>
-          <span className="text-xl font-bold">Search</span>
+        <button className="search-button flex gap-2 justify-between items-center bg-emerald-700 px-4 py-2 rounded-full text-white hover:bg-emerald-800  transition duration-300 ease-in-out active:scale-95">
+          <span className="fa fa-history text-md"></span>
+          <span className="text-xl font-lexend font-semibold">History</span>
         </button>
       </div>
     </>

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Geist+Pixel&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Lexend:wght@100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
 @theme {
   /* Adding a single custom color */
   --color-card: #fff;
@@ -9,6 +11,16 @@
   --color-scam: #b91c1c;
   --color-secondary: #059669;
   --color-text-primary: #111827;
-  --color-button-primary:#184e77;
-  --color-button-secondary:#1b4332;
-}
+  --color-button-primary:#3a5a40;
+  --color-button-secondary:#588157;
+
+  /* font families */
+  --font-lato: 'Lato', sans-serif;
+  --font-inter: 'Inter', sans-serif;
+  --font-lexend: 'Lexend', sans-serif;
+  --font-roboto: 'Roboto', sans-serif;
+  --font-poppins: 'Poppins', sans-serif;
+  --font-open-sans: 'Open Sans', sans-serif;
+  --font-geist-pixel: 'Geist Pixel', sans-serif;  
+} 
+
