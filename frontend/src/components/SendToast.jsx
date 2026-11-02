@@ -1,4 +1,3 @@
-import React from "react";
 // import "./SendToast.css";
 
 const SendToast = () => {

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import ReportComponent from "./ReportComponent";
 
 const ReportSite = ({
@@ -46,6 +46,7 @@ const ReportSite = ({
         {isOpen && (
           <div ref={panelRef} className="report-site-panel-reveal w-full animate-fadeIn">
             <ReportComponent
+              key={`${scanResult?.input?.contentHash ?? "none"}:${defaultTitle}:${defaultTarget}`}
               defaultTitle={defaultTitle}
               defaultTarget={defaultTarget}
               scanResult={scanResult}

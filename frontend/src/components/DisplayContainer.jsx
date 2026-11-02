@@ -1,4 +1,3 @@
-import React from "react";
 import RiskScore from "./RiskScore";
 import ScanSummary from "./ScanSummary";
 import Graph from "./Graph";

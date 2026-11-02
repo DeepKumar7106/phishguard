@@ -4,9 +4,6 @@ import { Readable } from 'node:stream';
 import { EventEmitter } from 'node:events';
 
 process.env.NODE_ENV = 'test';
-if (!process.env.DATABASE_URL || process.env.DATABASE_URL.startsWith('file:')) {
-  process.env.DATABASE_URL = 'postgresql://neondb_owner:npg_5gH3qaFUWdKe@ep-super-lab-b3odp97h-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require';
-}
 
 const { default: app } = await import('../src/index.js');
 const { prisma } = await import('../src/config/prisma.js');

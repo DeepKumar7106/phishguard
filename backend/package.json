@@ -1,20 +1,26 @@
 {
   "name": "phishguard-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "PhishGuard threat analysis API (Express + Prisma + optional Redis/Ollama)",
   "main": "src/index.js",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "node --test test/*.test.js",
+    "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "cors": "^2.8.6",
@@ -23,10 +29,10 @@
     "ioredis": "^6.0.0",
     "multer": "^2.5.0",
     "ollama": "^0.6.4",
+    "prisma": "^6.19.3",
     "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14",
-    "prisma": "^6.19.3"
+    "nodemon": "^3.1.14"
   }
 }

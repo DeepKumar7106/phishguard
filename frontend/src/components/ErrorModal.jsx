@@ -1,4 +1,3 @@
-import React from "react";
 
 const ErrorModal = ({ errorMessage, onClose }) => {
   if (!errorMessage) return null;

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import "./UserInput.css";
 
 const UserInput = ({ onScan, loading, hasResult, onClear }) => {

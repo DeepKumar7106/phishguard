@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { submitScamReport } from "../api";
 import {
   deriveReportSummaryTitle,
@@ -53,26 +53,6 @@ const ReportComponent = ({
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-
-  // Synchronize when scanResult or default props change
-  useEffect(() => {
-    const newTitle = computeInitialTitle();
-    if (newTitle) {
-      setTargetEndpoint(newTitle);
-    }
-
-    const newContact = computeInitialContact();
-    if (newContact) {
-      setContactEndpoint(newContact);
-    }
-
-    if (scanResult) {
-      const autoDesc = deriveReportDescription(scanResult);
-      if (autoDesc) {
-        setDescription(autoDesc);
-      }
-    }
-  }, [scanResult, defaultTitle, defaultTarget]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

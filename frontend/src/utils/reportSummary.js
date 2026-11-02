@@ -92,7 +92,7 @@ export function deriveReportSummaryTitle(scanResult, fallbackTarget = "") {
   if (primaryDomain) {
     const domainFlag =
       redFlags.length > 0
-        ? ` - ${redFlags[0].replace(/^[•\-\*\s]+/, "").slice(0, 50)}`
+        ? ` - ${redFlags[0].replace(/^[•*\s-]+/, "").slice(0, 50)}`
         : " - Suspicious Domain";
     return `${riskTag} ${primaryDomain}${domainFlag}`;
   }
@@ -100,7 +100,7 @@ export function deriveReportSummaryTitle(scanResult, fallbackTarget = "") {
   // 5. Key Red Flag from Analyzed Threat
   if (redFlags.length > 0) {
     const topFlag = redFlags[0]
-      .replace(/^[•\-\*\s]+/, "")
+      .replace(/^[•*\s-]+/, "")
       .replace(/\s+/g, " ")
       .trim();
     if (topFlag.length > 5) {

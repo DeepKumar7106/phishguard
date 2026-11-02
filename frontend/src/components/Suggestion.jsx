@@ -1,4 +1,3 @@
-import React from "react";
 
 const Suggestion = ({ suggestion }) => {
   const guidanceList = Array.isArray(suggestion)

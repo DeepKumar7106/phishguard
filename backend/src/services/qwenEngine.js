@@ -31,9 +31,19 @@ export function getIndiaScamDataset() {
   return indiaScamProfiles;
 }
 
+const OLLAMA_ENABLED =
+  String(process.env.OLLAMA_ENABLED ?? 'true').toLowerCase() !== 'false';
 const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';
 const QWEN_MODEL = process.env.OLLAMA_MODEL || 'qwen2.5:7b-instruct';
-const OLLAMA_TIMEOUT_MS = process.env.NODE_ENV === 'test' ? 1_500 : 25_000;
+const DEFAULT_OLLAMA_TIMEOUT_MS = process.env.NODE_ENV === 'test' ? 1_500 : 25_000;
+const configuredTimeoutMs = Number.parseInt(
+  process.env.OLLAMA_TIMEOUT_MS ?? '',
+  10,
+);
+const OLLAMA_TIMEOUT_MS =
+  Number.isFinite(configuredTimeoutMs) && configuredTimeoutMs > 0
+    ? configuredTimeoutMs
+    : DEFAULT_OLLAMA_TIMEOUT_MS;
 
 function fetchWithTimeout(url, options = {}) {
   const timeoutSignal = AbortSignal.timeout(OLLAMA_TIMEOUT_MS);
@@ -600,6 +610,14 @@ export async function analyzeWithQwen(cleanedText, metadataChecks = null) {
 
   const metadataContext = buildMetadataContext(metadataChecks);
   const scamMatch = matchIndianScamPattern(cleanedText);
+
+  if (!OLLAMA_ENABLED) {
+    console.info(
+      '[qwenEngine] Ollama disabled (OLLAMA_ENABLED=false). Using deterministic fallback engine.',
+    );
+    const fallbackVerdict = executeDeterministicFallback(cleanedText, metadataChecks);
+    return enforceMetadataRiskFloor(fallbackVerdict, metadataChecks);
+  }
 
   let rawContent;
   let usedEngine = 'ollama_qwen';

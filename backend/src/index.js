@@ -48,8 +48,13 @@ const CACHE_TTL_SECONDS = 86_400;
 
 const app = express();
 
-// Global middleware
-app.use(cors());
+// CORS: allow all origins by default; restrict with a comma-separated list.
+const CORS_ORIGINS = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+app.use(cors(CORS_ORIGINS.length > 0 ? { origin: CORS_ORIGINS } : {}));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 

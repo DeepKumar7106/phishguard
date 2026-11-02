@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import Header from "./components/Header";
 import UserInput from "./components/UserInput";
@@ -115,7 +115,9 @@ function App() {
     setError(null);
     try {
       localStorage.removeItem(STORAGE_KEY_LAST_SCAN);
-    } catch {}
+    } catch {
+      // Ignore storage errors (private mode or quota exceeded).
+    }
   };
 
   const handleClearError = () => {
@@ -141,7 +143,9 @@ function App() {
     setHistory([]);
     try {
       localStorage.removeItem(STORAGE_KEY_HISTORY);
-    } catch {}
+    } catch {
+      // Ignore storage errors (private mode or quota exceeded).
+    }
   };
 
   return (

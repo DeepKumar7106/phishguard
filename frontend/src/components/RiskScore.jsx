@@ -1,4 +1,3 @@
-import React from "react";
 
 const RiskScore = ({ score = 0, riskLevel = "Low", matchedPatternId = null, matchedPatternDetails = null }) => {
   const safeScore = Math.min(100, Math.max(0, Number(score || 0)));

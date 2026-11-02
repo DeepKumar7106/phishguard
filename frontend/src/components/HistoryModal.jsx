@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { isHash, deriveReportSummaryTitle, computeGranularThreatScore, computeAuthenticityScore, formatScorePercentage } from "../utils/reportSummary";
 
 // Clean Feather/Lucide-style SVG Icons (replaces AI-sloppy unicode emojis)
