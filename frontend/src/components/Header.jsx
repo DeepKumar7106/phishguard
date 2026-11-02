@@ -21,7 +21,7 @@ const Header = ({ onOpenHistory, historyCount = 0 }) => {
               className="h-11 w-11 rounded-full border border-white/40 shadow-sm"
             />
           </span>
-          <h1 className="title text-2xl font-bold text-slate-800 sm:text-3xl">
+          <h1 className="title text-2xl font-bold text-slate-200 sm:text-3xl">
             PhishGuard
           </h1>
         </div>
