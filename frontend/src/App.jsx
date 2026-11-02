@@ -5,7 +5,7 @@ import UserInput from "./components/UserInput";
 import DisplayContainer from "./components/DisplayContainer";
 import HistoryModal from "./components/HistoryModal";
 import { analyzeThreat } from "./api";
-import { deriveReportSummaryTitle, isHash } from "./utils/reportSummary";
+import { deriveReportSummaryTitle, isHash, computeGranularThreatScore, computeAuthenticityScore } from "./utils/reportSummary";
 
 const STORAGE_KEY_LAST_SCAN = "phishguard_last_scan";
 const STORAGE_KEY_HISTORY = "phishguard_scan_history";
@@ -74,10 +74,8 @@ function App() {
         (content ? content.slice(0, 50).trim() : file?.name || "Scanned Entity");
 
       const riskLevel = result.verdict?.risk_level || "Unknown";
-      const score =
-        result.verdict?.score ??
-        (riskLevel === "High" ? 85 : riskLevel === "Medium" ? 50 : 15);
-      const authenticityScore = Math.max(0, 100 - score);
+      const score = computeGranularThreatScore(result, content);
+      const authenticityScore = computeAuthenticityScore(score);
 
       const historyRecord = {
         id: `scan_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,

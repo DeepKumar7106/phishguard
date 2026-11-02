@@ -6,7 +6,7 @@ import Suggestion from "./Suggestion";
 import ReportSite from "./ReportSite";
 import ErrorModal from "./ErrorModal";
 import LoadAnimation1 from "./load-animations/LoadAnimation1";
-import { deriveReportSummaryTitle } from "../utils/reportSummary";
+import { deriveReportSummaryTitle, computeGranularThreatScore } from "../utils/reportSummary";
 
 const DisplayContainer = ({ scanResult, loading, error, onClearError, onReported }) => {
   if (loading) {
@@ -41,7 +41,7 @@ const DisplayContainer = ({ scanResult, loading, error, onClearError, onReported
   }
 
   const verdict = scanResult.verdict || {};
-  const score = verdict.score ?? (verdict.risk_level === "High" ? 85 : verdict.risk_level === "Medium" ? 50 : 10);
+  const score = computeGranularThreatScore(scanResult);
   const riskLevel = verdict.risk_level || "Low";
   const matchedPatternId = verdict.matched_pattern_id;
   const matchedPatternDetails = verdict.matched_pattern_details;

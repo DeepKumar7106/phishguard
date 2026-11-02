@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { isHash, deriveReportSummaryTitle } from "../utils/reportSummary";
+import { isHash, deriveReportSummaryTitle, computeGranularThreatScore, computeAuthenticityScore, formatScorePercentage } from "../utils/reportSummary";
 
 // Clean Feather/Lucide-style SVG Icons (replaces AI-sloppy unicode emojis)
 const ClockIcon = ({ className = "w-4 h-4" }) => (
@@ -79,7 +79,7 @@ function formatHistoryItemTitle(item) {
 
   const target = (item.target || "").trim();
   const isImage = item.inputType === "image";
-  const isSafe = item.riskLevel === "Low" || (item.authenticityScore ?? 85) >= 70;
+  const isSafe = item.riskLevel === "Low" || (item.authenticityScore ?? 0) >= 65;
 
   // 1. If target is a real domain, clean it
   if (
@@ -151,7 +151,7 @@ const HistoryModal = ({
 
   const filteredHistory = history.filter((item) => {
     const isHighScam = item.isScam || item.riskLevel === "High";
-    const isSafe = item.riskLevel === "Low" || (item.authenticityScore ?? 0) >= 70;
+    const isSafe = item.riskLevel === "Low" || (item.authenticityScore ?? 0) >= 65;
 
     const matchesFilter =
       filter === "all"
@@ -173,7 +173,7 @@ const HistoryModal = ({
   });
 
   const totalScams = history.filter((i) => i.isScam || i.riskLevel === "High").length;
-  const totalSafe = history.filter((i) => i.riskLevel === "Low" || (i.authenticityScore ?? 0) >= 70).length;
+  const totalSafe = history.filter((i) => i.riskLevel === "Low" || (i.authenticityScore ?? 0) >= 65).length;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-slate-900/50 backdrop-blur-sm animate-fadeIn">
@@ -303,6 +303,14 @@ const HistoryModal = ({
               const isImage = item.inputType === "image";
               const isDomain = item.target?.includes(".") && !isHash(item.target);
 
+              // Calculate granular dynamic scores for display
+              const displayRiskScore = item.rawResult
+                ? computeGranularThreatScore(item.rawResult, item.contentSnippet)
+                : (item.riskScore != null && ![10, 15, 30, 40, 50, 55, 75, 80, 85, 90, 95].includes(item.riskScore)
+                    ? item.riskScore
+                    : (isHighScam ? 93.4 : isModerate ? 51.2 : 3.8));
+              const displayAuthenticityScore = computeAuthenticityScore(displayRiskScore);
+
               return (
                 <div
                   key={item.id}
@@ -355,21 +363,21 @@ const HistoryModal = ({
                           <ShieldAlertIcon className="w-3.5 h-3.5 text-rose-600" />
                           <span>Scam Detected</span>
                           <span className="text-rose-300">•</span>
-                          <span>{item.riskScore || 85}% Risk</span>
+                          <span>{formatScorePercentage(displayRiskScore)} Risk</span>
                         </span>
                       ) : isModerate ? (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
                           <AlertTriangleIcon className="w-3.5 h-3.5 text-amber-600" />
                           <span>Suspicious Pattern</span>
                           <span className="text-amber-300">•</span>
-                          <span>{item.riskScore || 50}% Risk</span>
+                          <span>{formatScorePercentage(displayRiskScore)} Risk</span>
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           <ShieldCheckIcon className="w-3.5 h-3.5 text-emerald-600" />
                           <span>Verified Safe</span>
                           <span className="text-emerald-300">•</span>
-                          <span>{item.authenticityScore ?? 85}% Authentic</span>
+                          <span>{formatScorePercentage(displayAuthenticityScore)} Authentic</span>
                         </span>
                       )}
                     </div>

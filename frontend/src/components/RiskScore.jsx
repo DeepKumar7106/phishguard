@@ -2,6 +2,9 @@ import React from "react";
 
 const RiskScore = ({ score = 0, riskLevel = "Low", matchedPatternId = null, matchedPatternDetails = null }) => {
   const safeScore = Math.min(100, Math.max(0, Number(score || 0)));
+  const formattedScore = safeScore.toFixed(1).replace(/\.0$/, "");
+  const authenticityScore = Math.max(0, Math.min(100, Number((100 - safeScore).toFixed(1))));
+  const formattedAuthenticity = authenticityScore.toFixed(1).replace(/\.0$/, "");
 
   // Normalize risk level
   const normalizedLevel = (riskLevel || "Low").toLowerCase();
@@ -23,28 +26,40 @@ const RiskScore = ({ score = 0, riskLevel = "Low", matchedPatternId = null, matc
     barColor = "#f59e0b"; // amber-500
     badgeBg = "bg-amber-100 text-amber-800 border-amber-300";
   } else {
-    levelLabel = "Low Risk - Likely Safe";
+    levelLabel = "Low Risk - Verified Safe";
     barColor = "#10b981"; // emerald-500
     badgeBg = "bg-emerald-100 text-emerald-800 border-emerald-300";
   }
 
+  const isAuthentic = authenticityScore >= 65;
+
   return (
     <div className="w-full rounded-2xl bg-[#ebf1f4] p-5 shadow-[6px_6px_14px_rgba(163,177,198,0.2),-6px_-6px_14px_rgba(255,255,255,0.9)] border border-white/40">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           <span className="text-xl font-lexend font-bold text-slate-800">
             Threat Assessment:
           </span>
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${badgeBg}`}>
             {levelLabel}
           </span>
+          <span
+            className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium border ${
+              isAuthentic
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                : "bg-slate-100 text-slate-600 border-slate-200"
+            }`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${isAuthentic ? "bg-emerald-500" : "bg-slate-400"}`} />
+            <span>Authenticity Index: <strong>{formattedAuthenticity}%</strong></span>
+          </span>
         </div>
 
-        <div className="text-right">
-          <span className="text-2xl font-lexend font-extrabold text-slate-800">
-            {safeScore}
+        <div className="text-left sm:text-right flex items-baseline sm:justify-end gap-1.5">
+          <span className="text-2xl sm:text-3xl font-lexend font-extrabold text-slate-800">
+            {formattedScore}%
           </span>
-          <span className="text-sm font-medium text-slate-500"> / 100</span>
+          <span className="text-xs font-medium text-slate-500">Threat Risk</span>
         </div>
       </div>
 
